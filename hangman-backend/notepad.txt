@@ -1,0 +1,6 @@
+I want to create a hangman game in nodejs/javascript that incorporate AI as the letters need to be said in a microphone and the AI need to understand and sent to the game.
+So key points i needed.
+Develop a hangman game running in javascript, what libraries i can use to achieve this?
+Can each letter of the alphabet be a API endpoint?
+Maybe using react to manage the states receiving via the api?
+What AI that is free to use can receive the audio and translate the letters?

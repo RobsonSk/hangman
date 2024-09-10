@@ -1,0 +1,20 @@
+POST http://localhost:3000/start
+
+###
+POST http://localhost:3000/guess
+Content-Type: application/json
+
+{
+    "letter": "e"
+}
+
+###
+POST http://localhost:3000/guess-word
+Content-Type: application/json
+
+{
+    "word": "express"
+}
+
+###
+GET http://localhost:3000/state
