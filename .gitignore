@@ -213,5 +213,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.wav
+*.mp3
 
+vosk-pt-br/
+vosk-model-small-pt-0.3/
 # End of https://www.toptal.com/developers/gitignore/api/node,react,windows,linux,visualstudiocode

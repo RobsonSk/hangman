@@ -1,63 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { saveAs } from 'file-saver';
-import { MediaRecorder, register } from 'extendable-media-recorder';
+import React, { useState, useRef } from 'react';
+import axios from 'axios';
 
-const AudioRecorder = () => {
-    const [audioBlob, setAudioBlob] = useState(null);
-    const [isRecording, setIsRecording] = useState(false);
-    const [capturedStream, setCapturedStream] = useState(null);
+const AudioRecorder = ({ onTranscription }) => {
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const [audioChunks, setAudioChunks] = useState([]);
 
-    useEffect(() => {
-        register();
-    }, []);
+  const startRecording = () => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
 
-    const startRecording = () => {
-        navigator.mediaDevices.getUserMedia({
-            audio: {
-                echoCancellation: true,
+        mediaRecorder.ondataavailable = event => {
+          setAudioChunks(prev => [...prev, event.data]);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+          console.log('Audio Blob Size:', audioBlob.size);
+          if (audioBlob.size > 0) {
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'audio.wav');
+        
+            try {
+              const response = await axios.post('http://localhost:3000/speech-to-text', formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              });
+              onTranscription(response.data.transcription);
+            } catch (error) {
+              console.error('Error sending audio data:', error);
             }
-        }).then(stream => {
-            setCapturedStream(stream);
-            setIsRecording(true);
+          } else {
+            console.error('Recording failed, audioBlob is empty');
+          }
+        };
+        
+        mediaRecorder.start();
+        setIsRecording(true);
+      })
+      .catch(error => console.error('Error accessing microphone:', error));
+  };
 
-            const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'audio/wav'
-            });
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
 
-            mediaRecorder.addEventListener('dataavailable', event => {
-                const audioBlobs = [];
-                audioBlobs.push(event.data);
-                setAudioBlob(new Blob(audioBlobs, { type: mediaRecorder.mimeType }));
-            });
-
-            mediaRecorder.start();
-        }).catch((e) => {
-            console.error(e);
-        });
-    };
-
-    const stopRecording = () => {
-        setIsRecording(false);
-        capturedStream.getTracks().forEach(track => track.stop());
-        saveAs(audioBlob, 'recording.wav');
-    };
-
-    const playAudio = () => {
-        if (audioBlob) {
-            const audio = new Audio();
-            audio.src = URL.createObjectURL(audioBlob);
-            audio.play();
-        }
-    };
-
-    return (
-        <div>
-            <button onClick={startRecording} disabled={isRecording} >Start Recording</button>
-            <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
-            <button onClick={playAudio} disabled={!audioBlob}>Play</button>
-        </div>
-    );
+  return (
+    <div>
+      <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
+      <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
+    </div>
+  );
 };
 
 export default AudioRecorder;
-

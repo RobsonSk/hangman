@@ -1,10 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const app = express();
+const { Model, KaldiRecognizer } = require('vosk');
+const fs = require('fs');
+const wav = require('wav');
+const stream = require('stream');
+const vosk = require('vosk');
+
 
 app.use(cors()); 
-
+app.use(fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB file size limit
+}));
 app.use(express.json());
+
+const model = new vosk.Model("/home/robson.santos@DTACENTER.MR/hangman/hangman-backend/vosk-model-small-pt-0.3");
 
 // const words = ["javascript", "hangman", "express", "nodejs", "react"];
 const words = ['teste']
@@ -77,6 +88,38 @@ app.post('/guess-word', (req, res) => {
             res.json({ maskedWord, remainingAttempts, message: 'Incorrect guess!' });
         }
     }
+});
+
+app.post('/speech-to-text', (req, res) => {
+    if (!req.files || !req.files.audio) {
+        return res.status(400).send('No audio file uploaded.');
+    }
+
+    const audioBuffer = req.files.audio.data;
+
+    if (audioBuffer.length === 0) {
+        return res.status(400).send('Received empty audio buffer.');
+    }
+
+    const reader = new wav.Reader();
+
+    reader.on('format', (format) => {
+        const rec = new vosk.Recognizer({ model: model, sampleRate: format.sampleRate });
+        reader.on('data', (chunk) => {
+            rec.acceptWaveform(chunk);
+        });
+
+        reader.on('end', () => {
+            const result = rec.finalResult();
+            rec.free();  // Free up memory
+            res.json({ transcription: result.text });
+            console.log(result);
+        });
+    });
+
+    const bufferStream = new stream.PassThrough(); // Use PassThrough to create a readable stream from buffer
+    bufferStream.end(audioBuffer); // End the stream with the audio buffer
+    bufferStream.pipe(reader);
 });
 
 // API to get the current game state
