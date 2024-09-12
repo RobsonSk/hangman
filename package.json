@@ -1,0 +1,15 @@
+{
+  "name": "hangman-root",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd hangman-backend && npm start",
+    "start:frontend": "cd hangman-frontend && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

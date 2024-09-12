@@ -3,18 +3,20 @@ const cors = require('cors');
 const multer = require('multer');
 const ffmpeg = require('fluent-ffmpeg');
 const app = express();
-const { Model, KaldiRecognizer } = require('vosk');
+const Model = require('vosk');
 const fs = require('fs');
 const wav = require('wav');
 const stream = require('stream');
 const vosk = require('vosk');
+const dotenv = require('dotenv');
+dotenv.config();
 
 
 app.use(cors()); 
 app.use(express.json());
 
 const upload = multer();
-const model = new vosk.Model("/home/robson.santos@DTACENTER.MR/hangman/hangman-backend/vosk-model-small-pt-0.3");
+const model = new vosk.Model(process.env.MODEL_PATH);
 
 // const words = ["javascript", "hangman", "express", "nodejs", "react"];
 const words = ['teste']
