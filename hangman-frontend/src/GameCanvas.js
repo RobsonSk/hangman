@@ -1,17 +1,14 @@
 // GameCanvas.js
 import React from 'react';
 import { TextStyle } from 'pixi.js';
-import { Container, Text } from '@pixi/react';
+import { Container, Sprite, Text } from '@pixi/react';
 
-const GameCanvas = ({ maskedWord, remainingAttempts, message }) => {
+const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) => {
     const textStyle = new TextStyle({
         align: 'center',
         fill: '#ffffff',
         fontSize: 50,
         letterSpacing: 20,
-        dropShadow: true,
-        dropShadowColor: '#E72264',
-        dropShadowDistance: 6,
     });
 
     const smallTextStyle = new TextStyle({
@@ -19,37 +16,53 @@ const GameCanvas = ({ maskedWord, remainingAttempts, message }) => {
         fontSize: 20,
     });
 
+    const imagesBody = {
+        0: './assets/body-full.png',
+        1: './assets/body-5.png',
+        2: './assets/body-4.png',
+        3: './assets/body-3.png',
+        4: './assets/body-2.png',
+        5: './assets/body-1.png',
+        6: './assets/body-empty.png',
+    }
+
+    const imageBody = imagesBody[remainingAttempts] || './assets/body-empty.png';
+
     return (
         <Container>
+            <Sprite image={imageBody}
+                x={100} // Center horizontally
+                y={100}
+                anchor={0} />
             <Text
-                text="Hangman Game"
-                anchor={0.5}
-                x={400} // Center horizontally
+                text="The Hangman Game"
+                x={window.innerWidth / 2.8} // Center horizontally
                 y={100} // Position vertically
-                // filters={[new BlurFilter()]}
                 style={textStyle}
             />
             <Text
                 text={maskedWord}
-                x={400}
+                x={window.innerWidth / 2}
                 y={200}
-                anchor={0.5}
                 style={textStyle}
             />
             <Text
                 text={`Remaining Attempts: ${remainingAttempts}`}
-                x={400}
+                x={window.innerWidth / 2}
                 y={300}
-                anchor={0.5}
                 style={smallTextStyle}
             />
             <Text
                 text={message || ''}
-                x={400}
+                x={window.innerWidth / 2}
                 y={350}
-                anchor={0.5}
                 style={smallTextStyle}
             />
+            <Text
+                text={`Guessed Letters: ${(guessedLetters && Array.isArray(guessedLetters)) ? guessedLetters.join(', ') : ''}`}
+                x={window.innerWidth / 2}
+                y={400}
+                style={smallTextStyle} />
         </Container>
     );
 };

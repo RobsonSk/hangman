@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
+const multer = require('multer');
+const ffmpeg = require('fluent-ffmpeg');
 const app = express();
 const { Model, KaldiRecognizer } = require('vosk');
 const fs = require('fs');
@@ -10,11 +11,9 @@ const vosk = require('vosk');
 
 
 app.use(cors()); 
-app.use(fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB file size limit
-}));
 app.use(express.json());
 
+const upload = multer();
 const model = new vosk.Model("/home/robson.santos@DTACENTER.MR/hangman/hangman-backend/vosk-model-small-pt-0.3");
 
 // const words = ["javascript", "hangman", "express", "nodejs", "react"];
@@ -41,7 +40,8 @@ app.post('/start', (req, res) => {
     res.json({
         message: 'New game started',
         maskedWord: getMaskedWord(),
-        remainingAttempts,
+        remainingAttempts, 
+        guessedLetters
     });
 });
 
@@ -57,20 +57,22 @@ app.post('/guess', (req, res) => {
     }
 
     guessedLetters.push(letter);
+    console.log(guessedLetters)
 
     if (currentWord.includes(letter)) {
         const maskedWord = getMaskedWord();
         if (maskedWord === currentWord) {
-            return res.json({ message: 'You won!', maskedWord, remainingAttempts });
+            return res.json({ message: 'You won!', maskedWord, remainingAttempts, guessedLetters });
         }
-        return res.json({ maskedWord, remainingAttempts });
+        return res.json({ guessedLetters, maskedWord, remainingAttempts });
+
     } else {
         remainingAttempts -= 1;
         if (remainingAttempts === 0) {
             maskedWord = currentWord; // Reveal the whole word if no attempts left
-            return res.json({ message: 'Game over', maskedWord, remainingAttempts });
+            return res.json({ message: 'Game over', maskedWord, remainingAttempts, guessedLetters });
         }
-        return res.json({ maskedWord: getMaskedWord(), remainingAttempts });
+        return res.json({ maskedWord: getMaskedWord(), remainingAttempts, guessedLetters });
     }
 });
 
@@ -81,46 +83,61 @@ app.post('/guess-word', (req, res) => {
         res.json({ maskedWord, remainingAttempts, message: 'Congratulations! You guessed the word!' });
     } else {
         remainingAttempts--;
-        if (remainingAttempts <= 0) {
+        if (remainingAttempts == 0) {
             maskedWord = currentWord; // Reveal the whole word if no attempts left
             res.json({ maskedWord, remainingAttempts, message: 'Game over! The word was ' + currentWord });
         } else {
-            res.json({ maskedWord, remainingAttempts, message: 'Incorrect guess!' });
+            remainingAttempts = 0;
+            maskedWord = currentWord; // Reveal the whole word if no attempts left
+            res.json({ maskedWord, remainingAttempts, message: 'Game over! The word was ' + currentWord });
+
         }
     }
 });
 
-app.post('/speech-to-text', (req, res) => {
-    if (!req.files || !req.files.audio) {
-        return res.status(400).send('No audio file uploaded.');
+app.post('/speech-to-text', upload.single('audio'), (req, res) => {
+    if (!req.file) {
+      return res.status(400).send('No audio file uploaded.');
     }
-
-    const audioBuffer = req.files.audio.data;
-
-    if (audioBuffer.length === 0) {
-        return res.status(400).send('Received empty audio buffer.');
-    }
-
-    const reader = new wav.Reader();
-
-    reader.on('format', (format) => {
-        const rec = new vosk.Recognizer({ model: model, sampleRate: format.sampleRate });
-        reader.on('data', (chunk) => {
+  
+    const audioBuffer = req.file.buffer;
+  
+    // Convert audio to WAV using ffmpeg
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(audioBuffer);
+  
+    const outputFilePath = `uploads/${Date.now()}_converted.wav`;
+  
+    ffmpeg(bufferStream)
+      .toFormat('wav')
+      .save(outputFilePath)
+      .on('end', () => {
+        const reader = new wav.Reader();
+  
+        reader.on('format', (format) => {
+          const rec = new vosk.Recognizer({ model: model, sampleRate: format.sampleRate });
+          
+          reader.on('data', (chunk) => {
             rec.acceptWaveform(chunk);
-        });
-
-        reader.on('end', () => {
+          });
+  
+          reader.on('end', () => {
             const result = rec.finalResult();
-            rec.free();  // Free up memory
+            rec.free();
+            fs.unlinkSync(outputFilePath); // Clean up the temporary WAV file
             res.json({ transcription: result.text });
-            console.log(result);
+            console.log(`Transcription: ${result.text}`);
+          });
         });
-    });
-
-    const bufferStream = new stream.PassThrough(); // Use PassThrough to create a readable stream from buffer
-    bufferStream.end(audioBuffer); // End the stream with the audio buffer
-    bufferStream.pipe(reader);
-});
+  
+        const fileStream = fs.createReadStream(outputFilePath);
+        fileStream.pipe(reader);
+      })
+      .on('error', (err) => {
+        console.error('Error processing audio with ffmpeg:', err);
+        res.status(500).send('Error processing audio');
+      });
+  });
 
 // API to get the current game state
 app.get('/state', (req, res) => {

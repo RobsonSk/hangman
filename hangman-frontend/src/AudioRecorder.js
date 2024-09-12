@@ -1,60 +1,76 @@
 import React, { useState, useRef } from 'react';
-import axios from 'axios';
 
-const AudioRecorder = ({ onTranscription }) => {
+const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
-  const [audioChunks, setAudioChunks] = useState([]);
+  const audioChunksRef = useRef([]);
 
-  const startRecording = () => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
-        const mediaRecorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = mediaRecorder;
+  // Start recording
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream ,{
+        mimeType: 'audio/webm',
+      });
 
-        mediaRecorder.ondataavailable = event => {
-          setAudioChunks(prev => [...prev, event.data]);
-        };
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
 
-        mediaRecorder.onstop = async () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-          console.log('Audio Blob Size:', audioBlob.size);
-          if (audioBlob.size > 0) {
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'audio.wav');
-        
-            try {
-              const response = await axios.post('http://localhost:3000/speech-to-text', formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
-              });
-              onTranscription(response.data.transcription);
-            } catch (error) {
-              console.error('Error sending audio data:', error);
-            }
-          } else {
-            console.error('Recording failed, audioBlob is empty');
-          }
-        };
-        
-        mediaRecorder.start();
-        setIsRecording(true);
-      })
-      .catch(error => console.error('Error accessing microphone:', error));
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(audioBlob);
+        audioChunksRef.current = [];
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Error starting recording:', err);
+    }
   };
 
+  // Stop recording
   const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
+  };
+
+  // Send audio to backend API
+  const sendAudioToServer = async () => {
+    if (!audioBlob) return;
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+
+    try {
+      const response = await fetch('http://localhost:3000/speech-to-text', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log(response.text);
+        console.log('Audio successfully sent to server');
+      } else {
+        console.error('Failed to send audio to server');
+      }
+    } catch (err) {
+      console.error('Error sending audio:', err);
     }
   };
 
   return (
     <div>
-      <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
-      <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
+      <button onClick={isRecording ? stopRecording : startRecording}>
+        {isRecording ? 'Stop Recording' : 'Start Recording'}
+      </button>
+      {audioBlob && (
+        <button onClick={sendAudioToServer}>
+          Send Audio to Server
+        </button>
+      )}
     </div>
   );
 };

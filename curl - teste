@@ -1,1 +1,0 @@
-curl -F "audio=@audio.mp3" http://localhost:3000/speech-to-text

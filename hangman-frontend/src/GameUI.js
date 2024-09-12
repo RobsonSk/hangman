@@ -8,7 +8,7 @@ const GameUI = ({ letter, wordGuess, setLetter, setWordGuess, guessLetter, guess
                 <input
                     type="text"
                     value={letter}
-                    onChange={(e) => setLetter(e.target.value)}
+                    onChange={(e) => setLetter(e.target.value.toLowerCase())}
                     placeholder="Guess a letter"
                 />
                 <button onClick={guessLetter}>Guess Letter</button>
@@ -18,7 +18,7 @@ const GameUI = ({ letter, wordGuess, setLetter, setWordGuess, guessLetter, guess
                 <input
                     type="text"
                     value={wordGuess}
-                    onChange={(e) => setWordGuess(e.target.value)}
+                    onChange={(e) => setWordGuess(e.target.value.toLowerCase())}
                     placeholder="Guess the word"
                 />
                 <button onClick={guessWord}>Guess Word</button>
