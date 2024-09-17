@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Stage } from '@pixi/react';
+import '@pixi/events';
 import axios from 'axios';
-import GameUI from './GameUI';
 import GameCanvas from './GameCanvas';
-import AudioRecorder from './AudioRecorder';
+import MenuToggle from './MenuToggle';
+import { useTranslation } from 'react-i18next';
 
 const Game = () => {
     const [maskedWord, setMaskedWord] = useState('');
@@ -12,21 +13,24 @@ const Game = () => {
     const [wordGuess, setWordGuess] = useState('');
     const [message, setMessage] = useState('');
     const [guessedLetters, setGuessedLetters] = useState([]);
-    
-    // Start a new game when the component loads
+    const { t, i18n } = useTranslation(); // useTranslation hook for translations
+
     useEffect(() => {
-        startNewGame();
+        setMessage('')
     }, []);
 
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng); // Function to change language
+      };
+      
     const startNewGame = async () => {
         try {
             const response = await axios.post('http://localhost:3000/start');
             const { maskedWord, remainingAttempts, message, guessedLetters } = response.data;
 
-            // Update state with response data
             setMaskedWord(maskedWord);
             setRemainingAttempts(remainingAttempts);
-            setMessage(message || '');
+            setMessage(t(message) || '');
             setGuessedLetters(guessedLetters || []);
             setLetter('');
             setWordGuess('');
@@ -45,13 +49,11 @@ const Game = () => {
             const response = await axios.post('http://localhost:3000/guess', { letter });
             const { maskedWord, remainingAttempts, message, guessedLetters = [] } = response.data;
 
-            // Update state with response data
             setMaskedWord(maskedWord);
             setRemainingAttempts(remainingAttempts);
             setMessage(message || '');
             setGuessedLetters([...guessedLetters]);
             setLetter('');
-            console.log("Guessed letters in GameCanvas:", guessedLetters);
         } catch (error) {
             setMessage(error.response.data.error || 'Error making a guess.');
         }
@@ -70,7 +72,6 @@ const Game = () => {
     };
 
     const handleTranscription = (transcription) => {
-        // Check if transcription is a single letter or full word
         if (transcription.length === 1) {
             setLetter(transcription);
             guessLetter();
@@ -86,12 +87,13 @@ const Game = () => {
         height,
         width,
         options: {
-            antialias: true,
+            backgroundColor: 0x000000,
         },
     };
 
     return (
-        <div>
+        <div className="game-container">
+
             <Stage {...stageProps}>
                 <GameCanvas
                     maskedWord={maskedWord}
@@ -100,7 +102,8 @@ const Game = () => {
                     guessedLetters={guessedLetters}
                 />
             </Stage>
-            <GameUI
+
+            <MenuToggle
                 letter={letter}
                 wordGuess={wordGuess}
                 setLetter={setLetter}
@@ -108,8 +111,9 @@ const Game = () => {
                 guessLetter={guessLetter}
                 guessWord={guessWord}
                 startNewGame={startNewGame}
+                handleTranscription={handleTranscription}
             />
-            <AudioRecorder onTranscription={handleTranscription} />
+           
         </div>
     );
 };

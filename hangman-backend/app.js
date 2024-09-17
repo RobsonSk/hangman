@@ -40,7 +40,7 @@ app.post('/start', (req, res) => {
     guessedLetters = [];
     remainingAttempts = 6;
     res.json({
-        message: 'New game started',
+        message: 'new_game_started',
         maskedWord: getMaskedWord(),
         remainingAttempts, 
         guessedLetters

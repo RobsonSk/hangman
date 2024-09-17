@@ -1,9 +1,15 @@
 // GameCanvas.js
-import React from 'react';
+import React, { useState } from 'react';
 import { TextStyle } from 'pixi.js';
 import { Container, Sprite, Text } from '@pixi/react';
+import { useTranslation } from 'react-i18next';
+
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) => {
+    const { t, i18n } = useTranslation(); // useTranslation hook for translations
+
+
     const textStyle = new TextStyle({
         align: 'center',
         fill: '#ffffff',
@@ -28,6 +34,23 @@ const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) 
 
     const imageBody = imagesBody[remainingAttempts] || './assets/body-empty.png';
 
+    const usFlag = './locales/en/flag.png';
+    const esFlag = './locales/es/flag.png';
+    const brFlag = './locales/br/flag.png';
+
+    const languages = ['en', 'es', 'br'];
+
+    const flags = [usFlag, esFlag, brFlag];
+
+    const [currentLanguageIndex, setCurrentLanguageIndex] = useState(0);
+
+    const changeLanguage = () => {
+        const nextLanguageIndex = (currentLanguageIndex + 1) % languages.length;
+        const nextLanguage = languages[nextLanguageIndex];
+        i18n.changeLanguage(nextLanguage); // Function to change language
+        setCurrentLanguageIndex(nextLanguageIndex);
+      };
+
     return (
         <Container>
             <Sprite image={imageBody}
@@ -35,7 +58,7 @@ const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) 
                 y={100}
                 anchor={0} />
             <Text
-                text="The Hangman Game"
+                text={t("game_title")}
                 x={window.innerWidth / 2.8} // Center horizontally
                 y={100} // Position vertically
                 style={textStyle}
@@ -47,22 +70,29 @@ const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) 
                 style={textStyle}
             />
             <Text
-                text={`Remaining Attempts: ${remainingAttempts}`}
+                text={t('remaining_attempts', { count: remainingAttempts })}
                 x={window.innerWidth / 2}
                 y={300}
                 style={smallTextStyle}
             />
             <Text
-                text={message || ''}
+                text={t(message) || ''}
                 x={window.innerWidth / 2}
                 y={350}
                 style={smallTextStyle}
             />
             <Text
-                text={`Guessed Letters: ${(guessedLetters && Array.isArray(guessedLetters)) ? guessedLetters.join(', ') : ''}`}
+                text={t('guessed_letters', { letters: guessedLetters && Array.isArray(guessedLetters) ? guessedLetters.join(', ') : '' })}
                 x={window.innerWidth / 2}
                 y={400}
                 style={smallTextStyle} />
+            <Sprite image={flags[(currentLanguageIndex) % flags.length]} 
+                x={window.innerWidth / 2}
+                y={window.innerHeight - 100}
+                interactive={true}
+                anchor={0}
+                pointerdown={() => {
+                    changeLanguage()}} />
         </Container>
     );
 };

@@ -1,0 +1,19 @@
+{
+  "game_title": "Hangman Game",
+  "new_game": "Start New Game",
+  "new_game_started": "Started New Game",
+  "guess": "Guess",
+  "enter_letter": "Enter a letter",
+  "enter_word": "Enter a word",
+  "guess_word": "Guess the word",
+  "guess_letter": "Guess a letter",
+  "language": "Language",
+  "english": "English",
+  "spanish": "Spanish",
+  "pt-br": "Portuguese (Brazil)",
+  "start_recording": "Start Recording",
+  "stop_recording": "Stop Recording",
+  "send_audio": "Send Audio to Server",
+  "remaining_attempts": "Remaining Attempts: {{count}}",
+  "guessed_letters": "Guessed Letters: {{letters}}"
+}

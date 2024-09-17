@@ -1,0 +1,19 @@
+{
+  "game_title": "Juego del Ahorcado",
+  "new_game": "Iniciar Nuevo Juego",
+  "new_game_started": "Iniciado nuevo juego",
+  "guess": "Adivinar",
+  "enter_letter": "Ingresa una letra",
+  "enter_word": "Ingresa una palabra",
+  "guess_word": "Adivina la palabra",
+  "guess_letter": "Adivina una letra",
+  "language": "Idioma",
+  "english": "Inglés",
+  "spanish": "Español",
+  "pt-br": "Português (Brasil)",
+  "start_recording": "Iniciar Grabación",
+  "stop_recording": "Detener Grabación",
+  "send_audio": "Enviar Audio para Servidor",
+  "remaining_attempts": "Intentos Restantes: {{count}}",
+  "guessed_letters": "Letras Adivinadas: {{letters}}"
+}

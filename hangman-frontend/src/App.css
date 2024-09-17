@@ -1,23 +1,35 @@
-.App {
-  text-align: center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.game-container {
+.App {
+  background-color: black;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 50px;
+  overflow: hidden;
 }
 
-input {
-  margin: 10px;
-  padding: 5px;
-  font-size: 16px;
+.game-container {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  overflow: hidden;
 }
 
-button {
-  margin: 10px;
-  padding: 5px 15px;
-  font-size: 16px;
-  cursor: pointer;
+.game-ui {
+  list-style: none;
+  display: list-item;
+  flex-direction: collumn;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: fit-content;
+}
+
+.audio-recorder {
+position: relative;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }

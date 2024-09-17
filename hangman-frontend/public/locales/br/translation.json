@@ -1,0 +1,20 @@
+{
+    "game_title": "Jogo da Forca",
+    "new_game": "Iniciar Novo Jogo",
+    "new_game_started": "Iniciado novo jogo",
+    "guess": "Adivinhar",
+    "enter_letter": "Digite uma letra",
+    "enter_word": "Digite uma palavra",
+    "guess_word": "Adivinhar a palavra",
+    "guess_letter": "Adivinhar uma letra",
+    "language": "Idioma",
+    "english": "Inglês",
+    "spanish": "Espanhol",
+    "pt-br": "Português (Brasil)",
+    "start_recording": "Iniciar Gravação",
+    "stop_recording": "Parar Gravação",
+    "send_audio": "Enviar Audio para Servidor",
+    "remaining_attempts": "Tentativas Restantes: {{count}}",
+    "guessed_letters": "Letras Adivinhadas: {{letters}}"
+  }
+  

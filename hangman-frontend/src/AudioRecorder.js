@@ -1,10 +1,12 @@
+//AudioRecorder.js
 import React, { useState, useRef } from 'react';
-
+import { useTranslation } from 'react-i18next';
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const { t, i18n } = useTranslation()
 
   // Start recording
   const startRecording = async () => {
@@ -62,13 +64,13 @@ const AudioRecorder = () => {
   };
 
   return (
-    <div>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? 'Stop Recording' : 'Start Recording'}
+    <div className='audio-recorder'>
+      <button type="button" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={isRecording ? stopRecording : startRecording}>
+        {isRecording ? t("Stop Recording") : t("Start Recording")}
       </button>
       {audioBlob && (
-        <button onClick={sendAudioToServer}>
-          Send Audio to Server
+        <button type="button" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={sendAudioToServer}>
+          {t("Send Audio to Server")}
         </button>
       )}
     </div>
