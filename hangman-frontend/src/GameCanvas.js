@@ -1,5 +1,5 @@
 // GameCanvas.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextStyle } from 'pixi.js';
 import { Container, Sprite, Text } from '@pixi/react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,16 @@ const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) 
 
     const flags = [usFlag, esFlag, brFlag];
 
-    const [currentLanguageIndex, setCurrentLanguageIndex] = useState(0);
+    const getCurrentLanguageIndex = () => {
+        const currentLanguage = i18n.language || 'en'; // Default to 'en' if no language is set
+        return languages.indexOf(currentLanguage);
+    };
+
+    const [currentLanguageIndex, setCurrentLanguageIndex] = useState(getCurrentLanguageIndex());
+
+    useEffect(() => {
+        setCurrentLanguageIndex(getCurrentLanguageIndex());
+    }, [i18n.language]);
 
     const changeLanguage = () => {
         const nextLanguageIndex = (currentLanguageIndex + 1) % languages.length;

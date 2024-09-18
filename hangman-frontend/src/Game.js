@@ -16,11 +16,24 @@ const Game = () => {
     const { t, i18n } = useTranslation(); // useTranslation hook for translations
 
     useEffect(() => {
-        setMessage('')
-    }, []);
+        setMessage('');
+
+        // Listen for language changes and update the message translation
+        const handleLanguageChange = () => {
+            setMessage((prevMessage) => (prevMessage ? t(prevMessage) : ''));
+        };
+
+        i18n.on('languageChanged', handleLanguageChange);
+
+        // Cleanup listener on component unmount
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange);
+        };
+    }, [i18n, t]);
 
     const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng); // Function to change language
+        i18n.changeLanguage(lng);
+        setMessage('') // Function to change language
       };
       
     const startNewGame = async () => {
