@@ -59,7 +59,7 @@ const Game = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/guess', { letter });
+            const response = await axios.post('http://localhost:3000/guess', { letter }); //TODO use accentuation in letter but accept the letter without accentuation
             const { maskedWord, remainingAttempts, message, guessedLetters = [] } = response.data;
 
             setMaskedWord(maskedWord);
@@ -76,8 +76,8 @@ const Game = () => {
         try {
             const response = await axios.post('http://localhost:3000/guess-word', { word: wordGuess });
             setMaskedWord(response.data.maskedWord);
-            setRemainingAttempts(response.data.remainingAttempts);
-            setMessage(t("game_over_word", { currentWord: response.data.currentWord }));
+            setRemainingAttempts(response.data.remainingAttempts); //TODO Disable buttons when not playing or after game over
+            setMessage(t("game_over_word", { currentWord: response.data.currentWord })); //TODO ajustar tela de game over ou won game
             setWordGuess('');
         } catch (error) {
             setMessage(t(error.response.data.error) || 'Error guessing the word.');
