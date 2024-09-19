@@ -18,8 +18,8 @@ app.use(express.json());
 const upload = multer();
 const model = new vosk.Model(process.env.MODEL_PATH);
 
-// const words = ["javascript", "hangman", "express", "nodejs", "react"];
-const words = ['teste']
+const words = ['casa', 'carro', 'mesa', 'bola', 'livro'];
+//const words = ['teste']
 let currentWord = words[Math.floor(Math.random() * words.length)];
 let guessedLetters = [];
 let remainingAttempts = 6;
@@ -87,7 +87,8 @@ app.post('/guess-word', (req, res) => {
         remainingAttempts--;
         if (remainingAttempts == 0) {
             maskedWord = currentWord; // Reveal the whole word if no attempts left
-            res.json({ maskedWord, remainingAttempts, message: 'Game over! The word was ' + currentWord });
+           // res.json({ maskedWord, remainingAttempts, message: 'Game over! The word was ' + currentWord });
+           res.json({ maskedWord, remainingAttempts, currentWord });
         } else {
             remainingAttempts = 0;
             maskedWord = currentWord; // Reveal the whole word if no attempts left

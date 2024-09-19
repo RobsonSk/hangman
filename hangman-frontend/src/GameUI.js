@@ -12,7 +12,7 @@ const GameUI = ({ letter, wordGuess, setLetter, setWordGuess, guessLetter, guess
     return (
         <div className='game-ui'>
             <div class="flex gap-2 flex-wrap justify-center p-4 md:p-12 max-w-3xl">
-                <input class="border rounded-lg px-3 py-2 mb-5 text-sm w-full outline-none dark:border-gray-500 dark:bg-gray-900"
+                <input class="border rounded-lg px-3 py-2 mb-5 text-sm w-full outline-none dark:border-gray-500 dark:bg-gray-900 text-white"
                     type="text"
                     value={letter}
                     onChange={(e) => setLetter(e.target.value.toLowerCase())}
@@ -22,7 +22,7 @@ const GameUI = ({ letter, wordGuess, setLetter, setWordGuess, guessLetter, guess
             </div>
 
             <div class="flex gap-2 flex-wrap justify-center p-4 md:p-12 max-w-3xl">
-                <input class="border rounded-lg px-3 py-2 mb-5 text-sm w-full outline-none dark:border-gray-500 dark:bg-gray-900"
+                <input class="border rounded-lg px-3 py-2 mb-5 text-sm w-full outline-none dark:border-gray-500 dark:bg-gray-900 text-white"
                     type="text"
                     value={wordGuess}
                     onChange={(e) => setWordGuess(e.target.value.toLowerCase())}

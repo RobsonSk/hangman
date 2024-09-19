@@ -68,7 +68,7 @@ const Game = () => {
             setGuessedLetters([...guessedLetters]);
             setLetter('');
         } catch (error) {
-            setMessage(error.response.data.error || 'Error making a guess.');
+            setMessage(t(error.response.data.error) || 'Error making a guess.');
         }
     };
 
@@ -77,10 +77,10 @@ const Game = () => {
             const response = await axios.post('http://localhost:3000/guess-word', { word: wordGuess });
             setMaskedWord(response.data.maskedWord);
             setRemainingAttempts(response.data.remainingAttempts);
-            setMessage(response.data.message);
+            setMessage(t("game_over_word", { currentWord: response.data.currentWord }));
             setWordGuess('');
         } catch (error) {
-            setMessage(error.response.data.error || 'Error guessing the word.');
+            setMessage(t(error.response.data.error) || 'Error guessing the word.');
         }
     };
 
