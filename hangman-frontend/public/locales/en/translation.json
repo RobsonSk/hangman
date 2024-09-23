@@ -11,9 +11,18 @@
   "english": "English",
   "spanish": "Spanish",
   "pt-br": "Portuguese (Brazil)",
+  "br": "Portuguese (Brazil)",
   "start_recording": "Start Recording",
   "stop_recording": "Stop Recording",
   "send_audio": "Send Audio to Server",
   "remaining_attempts": "Remaining Attempts: {{count}}",
-  "guessed_letters": "Guessed Letters: {{letters}}"
+  "guessed_letters": "Guessed Letters: {{letters}}",
+  "won": "You Won! Congratulations!",
+  "congratulations": "Congratulations! You guessed the word!",
+  "game_over_word": "Game Over! The word was {{currentWord}}",
+  "game_over": "Game Over",
+  "already_guessed": "Letter already guessed",
+  "single_letter": "Please enter a letter",
+  "error_start": "Error starting game",
+  " ": " "
 }

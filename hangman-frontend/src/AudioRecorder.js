@@ -1,5 +1,5 @@
 //AudioRecorder.js
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -63,14 +63,38 @@ const AudioRecorder = () => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'r' && !isRecording) {
+        startRecording();
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (event.key === 'r' && isRecording) {
+        stopRecording();
+        sendAudioToServer();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isRecording]);
+
   return (
     <div className='audio-recorder'>
       <button type="button" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? t("Stop Recording") : t("Start Recording")}
+        {isRecording ? t("stop_recording") : t("start_recording")}
       </button>
       {audioBlob && (
         <button type="button" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={sendAudioToServer}>
-          {t("Send Audio to Server")}
+          {t("send_audio")}
         </button>
       )}
     </div>

@@ -9,7 +9,6 @@ import "/node_modules/flag-icons/css/flag-icons.min.css";
 const GameCanvas = ({ maskedWord, remainingAttempts, message, guessedLetters }) => {
     const { t, i18n } = useTranslation(); // useTranslation hook for translations
 
-
     const textStyle = new TextStyle({
         align: 'center',
         fill: '#ffffff',

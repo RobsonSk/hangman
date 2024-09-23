@@ -14,6 +14,7 @@ const Game = () => {
     const [message, setMessage] = useState('');
     const [guessedLetters, setGuessedLetters] = useState([]);
     const { t, i18n } = useTranslation(); // useTranslation hook for translations
+    const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
         setMessage('');
@@ -38,6 +39,7 @@ const Game = () => {
       
     const startNewGame = async () => {
         try {
+            setGameStarted(true);
             const response = await axios.post('http://localhost:3000/start');
             const { maskedWord, remainingAttempts, message, guessedLetters } = response.data;
 
@@ -48,18 +50,18 @@ const Game = () => {
             setLetter('');
             setWordGuess('');
         } catch (error) {
-            console.error('Error starting a new game:', error);
+            console.error('error_start', error);
         }
     };
 
     const guessLetter = async () => {
         if (letter.length !== 1) {
-            setMessage('Please enter a single letter.');
+            setMessage(t("single_letter"));
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/guess', { letter }); //TODO use accentuation in letter but accept the letter without accentuation
+            const response = await axios.post('http://localhost:3000/guess', { letter }); 
             const { maskedWord, remainingAttempts, message, guessedLetters = [] } = response.data;
 
             setMaskedWord(maskedWord);
@@ -67,6 +69,11 @@ const Game = () => {
             setMessage(message || '');
             setGuessedLetters([...guessedLetters]);
             setLetter('');
+
+            if (message === 'won' || message === 'game_over') {
+                setGameStarted(false);  // Disable input fields
+            }
+    
         } catch (error) {
             setMessage(t(error.response.data.error) || 'Error making a guess.');
         }
@@ -76,21 +83,35 @@ const Game = () => {
         try {
             const response = await axios.post('http://localhost:3000/guess-word', { word: wordGuess });
             setMaskedWord(response.data.maskedWord);
-            setRemainingAttempts(response.data.remainingAttempts); //TODO Disable buttons when not playing or after game over
-            setMessage(t("game_over_word", { currentWord: response.data.currentWord })); //TODO ajustar tela de game over ou won game
+            setRemainingAttempts(response.data.remainingAttempts);
+            setMessage(t(response.data.message, { currentWord: response.data.currentWord })); 
+            console.log(response.data.message)
             setWordGuess('');
+            if (response.data.message === 'won' || response.data.message === 'game_over' || response.data.message === 'game_over_word') {
+                setGameStarted(false);  // Disable input fields
+            }
         } catch (error) {
             setMessage(t(error.response.data.error) || 'Error guessing the word.');
         }
     };
 
     const handleTranscription = (transcription) => {
-        if (transcription.length === 1) {
-            setLetter(transcription);
+        // Remove unwanted phrases like "letter" or extraneous words
+        const cleanedTranscription = transcription.toLowerCase().replace(/letter\s+/g, '').trim();
+    
+        // If it's a single character, treat it as a letter guess
+        if (cleanedTranscription.length === 1) {
+            setLetter(cleanedTranscription);
             guessLetter();
-        } else {
-            setWordGuess(transcription);
+        } 
+        // If it's more than one character, treat it as a word guess
+        else if (cleanedTranscription.length > 1) {
+            setWordGuess(cleanedTranscription);
             guessWord();
+        } 
+        // If no valid transcription was received
+        else {
+            console.error("Invalid transcription:", transcription);
         }
     };
 
@@ -125,6 +146,7 @@ const Game = () => {
                 guessWord={guessWord}
                 startNewGame={startNewGame}
                 handleTranscription={handleTranscription}
+                gameStarted={gameStarted}
             />
            
         </div>

@@ -11,17 +11,19 @@
     "english": "Inglês",
     "spanish": "Espanhol",
     "pt-br": "Português (Brasil)",
+    "br": "Português (Brasil)",
     "start_recording": "Iniciar Gravação",
     "stop_recording": "Parar Gravação",
     "send_audio": "Enviar Audio para Servidor",
     "remaining_attempts": "Tentativas Restantes: {{count}}",
     "guessed_letters": "Letras Adivinhadas: {{letters}}",
-    "You won!": "Venceu!",
-    "Congratulations! You guessed the word!": "Parabéns! Acertou a palavra!",
+    "won": "Você Venceu! Parabéns!",
+    "congratulations": "Parabéns! Acertou a palavra!",
     "game_over_word": "Fim de Jogo! A palavra era {{currentWord}}",
-    "Game over": "Fim de Jogo",
-    "Letter already guessed": "Letra ja adivinhada",
-    "Please provide a single letter": "Por favor, digite uma letra",
-    "Please enter a single letter": "Por favor, digite uma letra"
+    "game_over": "Fim de Jogo",
+    "already_guessed": "Letra ja adivinhada",
+    "single_letter": "Por favor, digite uma letra",
+    "error_start": "Erro ao iniciar o jogo",
+    " ": " "
   }
   

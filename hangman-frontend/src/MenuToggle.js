@@ -11,7 +11,8 @@ const MenuToggle = ({
     guessLetter,
     guessWord,
     startNewGame,
-    handleTranscription
+    handleTranscription,
+    gameStarted
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -19,7 +20,6 @@ const MenuToggle = ({
         <>
             <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                //className="absolute top-4 right-4 z-50 p-2 bg-blue-500 rounded-lg"
                 type="button" class="absolute top-4 right-4 z-50 p-2 bg-blue-500 rounded-lg text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
             >
                 
@@ -37,6 +37,7 @@ const MenuToggle = ({
                     guessLetter={guessLetter}
                     guessWord={guessWord}
                     startNewGame={startNewGame}
+                    gameStarted={gameStarted}
                 />
                 <AudioRecorder onTranscription={handleTranscription} />
             </div>
