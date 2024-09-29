@@ -20,23 +20,23 @@ app.use(express.json());
 const upload = multer();
 const model = new vosk.Model(process.env.MODEL_PATH);
 
-// const words =  [
-//     "abacaxi", "abelha", "avião", "azul", "bala", "banco", "banana", "bola",
-//     "boneca", "borboleta", "branco", "cachorro", "cadeira", "cama", "caneta",
-//     "carro", "casa", "chapéu", "chave", "copo", "cor", "coruja", "coelho",
-//     "computador", "dinossauro", "dente", "desenho", "dragão", "elefante",
-//     "escola", "estrela", "fada", "foguete", "formiga", "fruta", "gato",
-//     "girafa", "grande", "janela", "jardim", "joaninha", "lápis", "leão",
-//     "livro", "lobo", "macaco", "mala", "mamãe", "mar", "melancia", "menino",
-//     "menina", "mesa", "mestre", "navio", "ninho", "nuvem", "ovo", "pato",
-//     "peixe", "pessoa", "pião", "pirata", "pipa", "pintura", "porta", "quadro",
-//     "rato", "rei", "relógio", "roda", "rosa", "sapo", "sol", "sombrero",
-//     "tartaruga", "tigre", "tio", "urso", "vaca", "vassoura", "vento", "vermelho",
-//     "vovô", "vovó", "xadrez", "zebra", "zoológico", "zumbi", "arroz", "coração",
-//     "fada", "caracol", "pirulito", "golfinho", "mochila", "mel", "fogão", "estrela",
-//     "doce", "biscoito", "flauta", "galinha", "girassol"
-//   ];
-const words = ['dragão']
+const words =  [
+    "abacaxi", "abelha", "avião", "azul", "bala", "banco", "banana", "bola",
+    "boneca", "borboleta", "branco", "cachorro", "cadeira", "cama", "caneta",
+    "carro", "casa", "chapéu", "chave", "copo", "cor", "coruja", "coelho",
+    "computador", "dinossauro", "dente", "desenho", "dragão", "elefante",
+    "escola", "estrela", "fada", "foguete", "formiga", "fruta", "gato",
+    "girafa", "grande", "janela", "jardim", "joaninha", "lápis", "leão",
+    "livro", "lobo", "macaco", "mala", "mamãe", "mar", "melancia", "menino",
+    "menina", "mesa", "mestre", "navio", "ninho", "nuvem", "ovo", "pato",
+    "peixe", "pessoa", "pião", "pirata", "pipa", "pintura", "porta", "quadro",
+    "rato", "rei", "relógio", "roda", "rosa", "sapo", "sol", "sombrero",
+    "tartaruga", "tigre", "tio", "urso", "vaca", "vassoura", "vento", "vermelho",
+    "vovô", "vovó", "xadrez", "zebra", "zoológico", "zumbi", "arroz", "coração",
+    "fada", "caracol", "pirulito", "golfinho", "mochila", "mel", "fogão", "estrela",
+    "doce", "biscoito", "flauta", "galinha", "girassol"
+  ];
+//const words = ['dragão']
 let currentWord = words[Math.floor(Math.random() * words.length)];
 let guessedLetters = [];
 let remainingAttempts = 6;
@@ -76,7 +76,7 @@ app.post('/start', (req, res) => {
 
 app.post('/guess', (req, res) => {
     const { letter } = req.body;
-
+    console.log(letter)
     if (!letter || letter.length !== 1) {
         return res.status(400).json({ error: "single_letter" });
     }
@@ -158,9 +158,9 @@ app.post('/speech-to-text', upload.single('audio'), (req, res) => {
           reader.on('end', () => {
             const result = rec.finalResult();
             rec.free();
+            console.log(result)
             //fs.unlinkSync(outputFilePath); // Clean up the temporary WAV file
             res.json({ transcription: result.text });
-            console.log(`Transcription: ${result.text}`);
           });
         });
   

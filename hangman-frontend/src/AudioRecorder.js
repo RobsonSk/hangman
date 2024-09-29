@@ -1,7 +1,7 @@
 //AudioRecorder.js
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-const AudioRecorder = () => {
+const AudioRecorder = ({ onTranscription  }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
@@ -53,8 +53,9 @@ const AudioRecorder = () => {
       });
 
       if (response.ok) {
-        console.log(response.text);
-        console.log('Audio successfully sent to server');
+        const data = await response.json();
+        console.log('Transcription:', data.transcription);
+        onTranscription(data.transcription);
       } else {
         console.error('Failed to send audio to server');
       }

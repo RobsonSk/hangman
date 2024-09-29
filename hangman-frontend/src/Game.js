@@ -54,7 +54,9 @@ const Game = () => {
         }
     };
 
-    const guessLetter = async () => {
+    const guessLetter = async (inputLetter) => {
+        const letterToGuess = inputLetter || letter;
+
         if (letter.length !== 1) {
             setMessage(t("single_letter"));
             return;
@@ -97,12 +99,13 @@ const Game = () => {
 
     const handleTranscription = (transcription) => {
         // Remove unwanted phrases like "letter" or extraneous words
-        const cleanedTranscription = transcription.toLowerCase().replace(/letter\s+/g, '').trim();
-    
+        //const cleanedTranscription = transcription.toLowerCase().replace(/letra\s+/g, '').trim();
+        const cleanedTranscription = transcription.toLowerCase().replace(/\s+/g, '').trim();
+        console.log("Cleaned transcription:", cleanedTranscription);
         // If it's a single character, treat it as a letter guess
         if (cleanedTranscription.length === 1) {
-            setLetter(cleanedTranscription);
-            guessLetter();
+            setLetter();
+            guessLetter(cleanedTranscription);
         } 
         // If it's more than one character, treat it as a word guess
         else if (cleanedTranscription.length > 1) {
